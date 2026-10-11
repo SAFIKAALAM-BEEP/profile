@@ -1,63 +1,12 @@
 // Main React component: night-sky background, floating draggable die, character sheet, journal, shelves, certificates.
 import { useState, useEffect, useRef } from "react";
+import Scene from "./Scene.jsx";
 import { character, about, abilities, inventory, books, certificates } from "./data.js";
-
-// Deterministic "random" stars (same every render so they don't jump around).
-const stars = Array.from({ length: 110 }, (_, i) => {
-  const r = (n) => { const x = Math.sin(i * 999 + n) * 10000; return x - Math.floor(x); };
-  return { x: r(1) * 1200, y: r(2) * 520, r: r(3) * 1.4 + 0.3, d: r(4) * 4 };
-});
-
-// Fixed full-screen SVG scene: stars, moon, aurora, dragons, gothic cathedral, ocean waves.
-function Scene() {
-  const wave = "M-200 770 q50 -20 100 0" + " t100 0".repeat(16) + " V800 H-200Z"; // repeating wave line
-  return (
-    <svg className="scene" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <defs>
-        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#050818" /><stop offset=".7" stopColor="#0a1a38" /><stop offset="1" stopColor="#0d3a4f" /></linearGradient>
-        <linearGradient id="au1" x1="0" x2="1"><stop offset="0" stopColor="#34d399" stopOpacity=".7" /><stop offset=".5" stopColor="#22d3ee" stopOpacity=".5" /><stop offset="1" stopColor="#a78bfa" stopOpacity=".6" /></linearGradient>
-        <linearGradient id="au2" x1="0" x2="1"><stop offset="0" stopColor="#a78bfa" stopOpacity=".4" /><stop offset="1" stopColor="#5eead4" stopOpacity=".6" /></linearGradient>
-        <radialGradient id="glow"><stop offset="0" stopColor="#bfe9ff" stopOpacity=".5" /><stop offset="1" stopColor="#bfe9ff" stopOpacity="0" /></radialGradient>
-        {/* Dragon silhouette (faces right): raised wing, body, long neck/head, tail */}
-        <g id="dragon" fill="#03050d" stroke="#5eead4" strokeOpacity=".5" strokeWidth="1.5">
-          <path d="M95 50C80 20 60 5 30 0c15 15 10 22-2 28 17 2 17 10 10 18 22-1 42 4 57 4Z" />
-          <path d="M70 52C100 40 130 40 150 32L172 20l16 4-10 8 10 4-18 3C150 52 120 62 90 62 60 66 30 75 5 90c20-18 40-30 65-38Z" />
-        </g>
-      </defs>
-      <rect width="1200" height="800" fill="url(#sky)" />
-      {stars.map((s, i) => <circle key={i} className="star" cx={s.x} cy={s.y} r={s.r} fill="#e6f1ff" style={{ animationDelay: `${s.d}s` }} />)}
-      <circle cx="210" cy="120" r="100" fill="url(#glow)" /><circle cx="210" cy="120" r="32" fill="#e3f4ff" />
-      {/* Aurora borealis: blurred ribbons that sway slowly */}
-      <g className="aurora" style={{ filter: "blur(22px)" }}>
-        <path d="M-50 200C200 60 380 280 600 160S1000 50 1250 190V320C1000 190 800 370 600 280S200 170-50 330Z" fill="url(#au1)" />
-        <path d="M-50 330C250 220 450 400 700 290S1050 230 1250 320V420C1000 330 800 460 600 380S200 320-50 430Z" fill="url(#au2)" />
-      </g>
-      <g className="drift"><use href="#dragon" transform="translate(780 90) scale(1.5)" /></g>
-      <g className="drift slow"><use href="#dragon" transform="translate(330 250) scale(.6)" opacity=".5" /></g>
-      {/* Gothic cathedral silhouette: twin spires, central gable, pinnacles, pointed-arch windows, rose window */}
-      <g fill="#04060f">
-        <path d="M500 800V540L600 420 700 540V800Z" /><path d="M585 430L600 290 615 430Z" />
-        <path d="M430 800V500h60V800Z" /><path d="M424 500L460 380 496 500Z" />
-        <path d="M710 800V500h60V800Z" /><path d="M704 500L740 380 776 500Z" />
-        <path d="M330 800V620h100V800ZM770 800V620h100V800Z" />
-        <path d="M120 800V640l12-60 12 60V800ZM1010 800V660l12-60 12 60V800ZM260 800V680l10-50 10 50V800Z" />
-      </g>
-      <g fill="#5eead4" fillOpacity=".35" stroke="#5eead4" strokeOpacity=".5">
-        <path d="M588 740v-60q12-30 24 0v60zM530 740v-50q10-24 20 0v50zM650 740v-50q10-24 20 0v50z" />
-        <path d="M452 560v-30q8-20 16 0v30zM732 560v-30q8-20 16 0v30z" />
-        <circle cx="600" cy="505" r="22" fill="none" strokeWidth="2" />
-      </g>
-      {/* Ocean: two wave layers drifting in opposite directions */}
-      <path className="wave" d={wave} fill="#0b4a63" fillOpacity=".7" />
-      <path className="wave rev" d={wave} transform="translate(0 20)" fill="#061a33" fillOpacity=".9" />
-    </svg>
-  );
-}
 
 const DIE = 80; // die size in px
 
 // Floating d20 you can pick up, drag, and throw. It tumbles, bounces off the window edges, then settles on a result.
-function Dice({ request, onResult }) {
+function Dice({ request, onResult, locked }) {
   const el = useRef(null);
   const p = useRef({ x: 0, y: 0, vx: 0, vy: 0, rot: 0, vr: 0, drag: false, ox: 0, oy: 0, t: 0, label: "Free throw", mod: 0, raf: 0, frame: 0 });
   const [face, setFace] = useState(20);
@@ -88,11 +37,21 @@ function Dice({ request, onResult }) {
     s.raf = requestAnimationFrame(step);
   };
 
-  // Start in the bottom-right corner
+  // Start in the center of the screen (the "gate" roll)
   useEffect(() => {
-    const s = p.current; s.x = window.innerWidth - 130; s.y = window.innerHeight - 130; paint();
+    const s = p.current; s.x = window.innerWidth / 2 - DIE / 2; s.y = window.innerHeight / 2 - DIE / 2; paint();
     return () => cancelAnimationFrame(s.raf);
   }, []);
+
+  // When the gate opens, glide the die to the bottom-right corner
+  useEffect(() => {
+    if (locked) return;
+    const s = p.current, d = el.current;
+    d.style.transition = "transform .9s ease";
+    s.x = window.innerWidth - 130; s.y = window.innerHeight - 130; s.rot = 0; paint();
+    const t = setTimeout(() => (d.style.transition = ""), 950);
+    return () => clearTimeout(t);
+  }, [locked]);
 
   // An ability click asks the die to be thrown in a random direction
   useEffect(() => {
@@ -169,14 +128,16 @@ function CharacterSheet({ roll, onRoll }) {
   );
 }
 
-// Journal-style backstory: ruled paper, margin line, binder holes, ribbon bookmark, handwriting font (see CSS).
+// Grimoire-style backstory: aged parchment, leather border, drop cap, ribbon and wax seal (see CSS).
 function Journal() {
   return (
     <section className="journal">
       <span className="ribbon" aria-hidden="true" />
-      <h2>📖 Adventurer's Journal</h2>
+      <h2>Grimoire of the Adventurer</h2>
+      <div className="rule" aria-hidden="true">✦ ❖ ✦</div>
       {about.map((p, i) => <p key={i}>{p}</p>)}
       <p className="sign">~ {character.name}</p>
+      <span className="wax" aria-hidden="true">✠</span>
     </section>
   );
 }
@@ -237,7 +198,15 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(null); // book pulled from the shelf
   const [roll, setRoll] = useState(null);             // latest dice result
   const [request, setRequest] = useState(null);       // asks the die to be thrown
+  const [locked, setLocked] = useState(true);         // the "gate": page is locked until the first roll
+  const entered = useRef(false);
   const selected = books.find((b) => b.id === selectedId);
+
+  // Store each result; the FIRST result opens the gate after a short pause
+  const handleResult = (r) => {
+    setRoll(r);
+    if (!entered.current) { entered.current = true; setTimeout(() => setLocked(false), 1500); }
+  };
 
   useEffect(() => { // Escape closes the open book
     const onKey = (e) => e.key === "Escape" && setSelectedId(null);
@@ -248,8 +217,8 @@ export default function App() {
   return (
     <>
       <Scene />
-      <Dice request={request} onResult={setRoll} />
-      <main className="page">
+      {/* inert stops clicking AND keyboard focus on the page while locked */}
+      <main className="page" inert={locked ? "" : undefined}>
         <CharacterSheet roll={roll} onRoll={(label, mod) => setRequest({ id: Date.now(), label, mod })} />
         <div className="library">
           <Journal />
@@ -259,6 +228,13 @@ export default function App() {
           <Certificates />
         </div>
       </main>
+      {/* Gate overlay: lightly darkens everything behind the centered die */}
+      {locked && (
+        <div className="gate">
+          <p className="gate-text">{roll ? `You rolled a ${roll.die}. The realm opens...` : "Roll the die to enter the realm. Grab it and throw!"}</p>
+        </div>
+      )}
+      <Dice request={request} onResult={handleResult} locked={locked} />
     </>
   );
 }

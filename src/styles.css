@@ -50,15 +50,27 @@ a { color: #1d6f8f; }
 .slot h3 { font-size: 1rem; color: #1d5f7a; }
 .links a { margin-right: 1rem; }
 
-/* ---------- Journal: ruled paper, margin line, binder holes, ribbon, handwriting ---------- */
-.journal { position: relative; margin-bottom: 2rem; padding: 1.2rem 1.5rem 1rem 4.5rem; font: 1.5rem/32px var(--hand); color: #123a5c;
-  background: repeating-linear-gradient(transparent 0 31px, #9fb9ca 31px 32px), #eef4f7; border-radius: 4px 14px 14px 4px; }
-.journal::before { content: ""; position: absolute; left: 3.4rem; top: 0; bottom: 0; width: 2px; background: #e58fb0; } /* red margin line */
-.journal::after { content: ""; position: absolute; left: 1rem; top: 0; bottom: 0; width: 20px; background: radial-gradient(circle, var(--bg) 7px, transparent 8px) 0 20px / 20px 64px repeat-y; } /* binder holes */
-.journal h2 { font: 1.5rem/32px var(--heading); color: #1d4f7a; margin: 0 0 32px; }
-.journal p { margin: 0 0 32px; }
-.sign { text-align: right; font-size: 1.8rem; }
-.ribbon { position: absolute; top: -6px; right: 2rem; width: 22px; height: 80px; background: var(--violet); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); }
+/* ---------- Grimoire: aged parchment, leather border, ink, drop cap, ribbon, wax seal ---------- */
+.journal { position: relative; margin-bottom: 2rem; padding: 2rem 2rem 2.4rem 2.6rem; color: #3a2310; font: italic 1.2rem/1.65 var(--body); text-shadow: 0 0 1px #3a231088;
+  /* layers: paper grain, ink stains, burnt-looking edges */
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.8' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .2 0 0 0 0 .1 0 0 0 .2 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E"), radial-gradient(circle at 85% 90%, #7a4a1a66, transparent 30%), radial-gradient(circle at 10% 15%, #5a3a1a55, transparent 28%), radial-gradient(ellipse at center, #dcc796 55%, #b48c52 100%);
+  border: 12px solid #24140d; border-radius: 6px 16px 16px 6px; box-shadow: inset 0 0 50px #5a3a1acc, 0 0 0 2px #8a6a34, 0 0 30px #0009; }
+.journal h2 { font: 1.7rem var(--heading); color: #5a1a14; text-align: center; margin: 0; text-shadow: none; }
+.rule { text-align: center; color: #7a5a2a; letter-spacing: .6em; margin-bottom: 1rem; }
+.journal p { margin: 0 0 1rem; }
+.journal p:first-of-type::first-letter { font: 3rem/.8 var(--heading); color: #7b1d16; float: left; padding: .2rem .4rem 0 0; } /* illuminated drop cap */
+.sign { text-align: right; font: 1.8rem var(--hand); }
+.ribbon { position: absolute; top: -12px; right: 2rem; width: 22px; height: 80px; background: #7b1d16; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); }
+.wax { position: absolute; right: 1.4rem; bottom: -22px; width: 54px; height: 54px; display: grid; place-items: center; border-radius: 50%; font-size: 1.6rem; color: #4a0b08; background: radial-gradient(circle at 35% 35%, #b02a20, #6a130e); box-shadow: 0 3px 8px #0008, inset 0 0 6px #0006; text-shadow: none; }
+
+/* ---------- Gate: locks the page until the first roll ---------- */
+.gate { position: fixed; inset: 0; z-index: 4; display: flex; justify-content: center; padding-top: 20vh; background: rgba(2, 5, 16, .5); animation: fade .6s; }
+.gate-text { margin: 0; max-width: 80vw; text-align: center; font: 1.6rem var(--heading); color: var(--aqua); text-shadow: 0 0 14px #5eead4aa; }
+@keyframes fade { from { opacity: 0; } }
+
+/* Art slot placeholders in the background */
+.slot-frame rect { fill: none; stroke: #5eead4; stroke-opacity: .45; stroke-dasharray: 10 8; stroke-width: 2; }
+.slot-frame text { fill: #5eead4; fill-opacity: .6; font: 14px var(--body); }
 
 /* ---------- Bookshelf ---------- */
 .shelf-block h2, .certs > h2 { color: var(--aqua); text-shadow: 0 0 12px #5eead488; }
