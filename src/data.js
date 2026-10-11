@@ -38,24 +38,32 @@ export const inventory = [
 // Spine height is calculated from the title length, so no height is needed here.
 // `icon` is the little emblem (decal) stamped on the spine.
 export const books = [
-  { id: 1, title: "Variant Caller", status: "done", icon: "🧬", color: "#6b2d2d",
+  { id: 1, title: "Variant Caller", status: "done", icon: "🧬", color: "#12466b",
     summary: "A small pipeline that calls and annotates SNPs from sequencing reads.",
     details: "Built with Snakemake and Biopython. Compared my calls against a reference set.",
     tags: ["Python", "Snakemake"], repo: "https://github.com/your-username/variant-caller" },
-  { id: 2, title: "Gene Expression Clusters", status: "done", icon: "🔬", color: "#2d4a3e",
+  { id: 2, title: "Gene Expression Clusters", status: "done", icon: "🔬", color: "#0f5a52",
     summary: "Unsupervised clustering of RNA-seq samples to find hidden subtypes.",
     details: "Used PCA, UMAP and k-means; checked cluster stability with bootstrapping.",
     tags: ["scanpy", "ML"], repo: "https://github.com/your-username/expression-clusters" },
-  { id: 3, title: "Protein Fold Classifier", status: "done", icon: "🧠", color: "#3a3a6b",
+  { id: 3, title: "Protein Fold Classifier", status: "done", icon: "🧠", color: "#3a2a7a",
     summary: "A CNN that predicts protein fold families from sequence embeddings.",
     details: "Fine-tuned in PyTorch. Reached solid accuracy; lessons on class imbalance.",
     tags: ["PyTorch", "Proteins"], repo: "https://github.com/your-username/fold-classifier" },
-  { id: 4, title: "Cell Atlas", status: "active", icon: "🌌", color: "#7a5a1e",
+  { id: 4, title: "Cell Atlas", status: "active", icon: "🌌", color: "#6a2f7a",
     summary: "Integrating public single-cell datasets to map cell types across tissues.",
     details: "In progress: batch-correction methods and benchmarking.",
     tags: ["scanpy", "Integration"], repo: "https://github.com/your-username/cell-atlas" },
-  { id: 5, title: "Drug-Response Model", status: "active", icon: "💊", color: "#4b2d6b",
+  { id: 5, title: "Drug-Response Model", status: "active", icon: "💊", color: "#145a7a",
     summary: "Predicting cell-line drug response from genomic features.",
     details: "In progress: comparing regularised regression with gradient boosting.",
     tags: ["scikit-learn", "Stats"], repo: "https://github.com/your-username/drug-response" },
+];
+
+// Certificates: PLACEHOLDERS, replace with your own. `link` is optional (credential URL).
+export const certificates = [
+  { title: "Bioinformatics Foundations", issuer: "Issuer name", year: "2025", icon: "🧬", link: "https://example.com/cert-1" },
+  { title: "Machine Learning Specialization", issuer: "Issuer name", year: "2025", icon: "🧠", link: "https://example.com/cert-2" },
+  { title: "Python for Data Science", issuer: "Issuer name", year: "2024", icon: "🐍" },
+  { title: "Statistics with R", issuer: "Issuer name", year: "2024", icon: "📈" },
 ];
